@@ -18,6 +18,16 @@ server.get(
   })
 );
 server.get(
+  "/api/projects/:id",
+  validateProjectID,
+  catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const project = await db.getProject(id);
+    res.status(200).json(project);
+  })
+);
+
+server.get(
   "/api/resources",
   catchAsync(async (req, res) => {
     const resources = await db.getResources();

@@ -14,19 +14,25 @@ function getProjects() {
   return knex("projects").first();
 }
 function getProject(id) {
-  return knex("projects").where({ id }).first();
+  return knex("projects")
+    .where({ id })
+    .first()
+    .then(async project => ({ ...project, tasks: await getTasks(project.id) }));
 }
 function getTasks(project_id) {
-  return knex("tasks")
-    .where(project_id ? { project_id } : {})
-    .join("projects", "projects.id", "tasks.project_id")
-    .select(
-      "tasks.description",
-      "tasks.notes",
-      "tasks.completed",
-      "projects.name as project_name",
-      "projects.description as project_description"
-    );
+  return project_id
+    ? knex("tasks")
+        .where({ project_id })
+        .select("id", "description", "notes", "completed")
+    : knex("tasks")
+        .join("projects", "projects.id", "tasks.project_id")
+        .select(
+          "tasks.description",
+          "tasks.notes",
+          "tasks.completed",
+          "projects.name as project_name",
+          "projects.description as project_description"
+        );
 }
 function addResource(resource) {
   return knex("resources")
