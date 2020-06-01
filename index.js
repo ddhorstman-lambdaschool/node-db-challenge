@@ -58,7 +58,7 @@ server.post(
   "/api/projects",
   validate("projectSchema"),
   catchAsync(async (req, res) => {
-    const project = await db.addProject(req.body);
+    const project = await db.add("projects")(req.body);
     res.status(200).json(project);
   })
 );
@@ -66,7 +66,7 @@ server.post(
   "/api/resources",
   validate("resourceSchema"),
   catchAsync(async (req, res) => {
-    const resource = await db.addResource(req.body);
+    const resource = await db.add("resources")(req.body);
     res.status(200).json(resource);
   })
 );
@@ -77,7 +77,7 @@ server.post(
   validate("taskSchema"),
   catchAsync(async (req, res) => {
     const { id } = req.params;
-    const task = await db.addTask({ ...req.body, project_id: id });
+    const task = await db.add("tasks")({ ...req.body, project_id: id });
     res.status(200).json(task);
   })
 );

@@ -1,5 +1,11 @@
 const knex = require("./dbConfig");
 
+const add = type => data => {
+  return knex(type)
+    .insert(data, ["id"])
+    .then(([id]) => knex(type).where({ id }).first());
+};
+
 function addProject(project) {
   return knex("projects")
     .insert(project, ["id"])
@@ -43,6 +49,7 @@ function getResources() {
   return knex("resources");
 }
 module.exports = {
+  add,
   addProject,
   addTask,
   getProjects,
