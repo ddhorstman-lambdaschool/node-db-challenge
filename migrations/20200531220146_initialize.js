@@ -7,13 +7,13 @@ exports.up = function (knex) {
     })
     .createTable("projects", tbl => {
       tbl.increments("id");
-      tbl.boolean("completed");
+      tbl.boolean("completed").defaultTo(false);
       tbl.string("name").notNullable();
       tbl.string("description");
     })
     .createTable("tasks", tbl => {
       tbl.increments("id");
-      tbl.boolean("completed");
+      tbl.boolean("completed").defaultTo(false);
       tbl
         .integer("project_id")
         .notNullable()
