@@ -1,4 +1,4 @@
-// const { ValidationError } = require("jsonschema");
+const { ValidationError } = require("jsonschema");
 
 class AppError extends Error {
   constructor(message, status) {
@@ -26,20 +26,16 @@ function custom404(req, res, next) {
 
 function errorHandling(error, req, res, next) {
   console.error(error);
-  /*//handle ValidationErrors, which are sent as an array
+  //handle ValidationErrors, which are sent as an array
   if (error[0] instanceof ValidationError) {
     const message = error.map(e => e.stack.replace(/"/g, "'"));
     return res.status(400).json({ message });
   }
   //handle ordinary errors
-  else {*/
+  else {
     const { status = 500, message = "Error" } = error;
     return res.status(status).json({ message });
-/*  }
-
-  //send uninformative errors if we're in production
-  return res.status(500).json({ message: "Server error" });
-  */
+  }
 }
 
 module.exports = { AppError, catchAsync, custom404, errorHandling };
