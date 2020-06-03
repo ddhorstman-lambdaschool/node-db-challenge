@@ -1,4 +1,5 @@
-const { ValidationError } = require("jsonschema");
+const { ValidationError, Validator } = require("jsonschema");
+const knex = require("./data/dbConfig");
 
 class AppError extends Error {
   constructor(message, status) {
@@ -38,4 +39,38 @@ function errorHandling(error, req, res, next) {
   }
 }
 
-module.exports = { AppError, catchAsync, custom404, errorHandling };
+function validate(name) {
+  function processSchema(rawSchema) {
+    const keep = ["type", "maxLength"];
+
+    let properties = {};
+    let required = [];
+
+    for (const colName in rawSchema) {
+      if (!rawSchema[colName].nullable && !colName.includes("id")) {
+        required.push(colName);
+      }
+
+      properties[colName] = keep.reduce((constraints, constraintName) => {
+        constraints[constraintName] = rawSchema[colName][constraintName];
+        return constraints;
+      }, {});
+    }
+
+    return {
+      type: "object",
+      properties,
+      additionalProperties: false,
+      required,
+    };
+  }
+  return catchAsync(async (req, res, next) => {
+    const rawSchema = await knex(name).columnInfo();
+    console.log(processSchema(rawSchema))
+    const v = new Validator();
+    const { errors } = v.validate(req.body, processSchema(rawSchema));
+    errors.length !== 0 ? next(errors) : next();
+  });
+}
+
+module.exports = { AppError, catchAsync, custom404, errorHandling, validate };
