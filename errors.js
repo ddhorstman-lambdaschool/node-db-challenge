@@ -39,7 +39,17 @@ function errorHandling(error, req, res, next) {
   }
 }
 
-function validate(name) {
+function validate(schema){
+    return catchAsync(async (req, res, next) => {
+    const v = new Validator();
+    const { errors } = v.validate(req.body, schema);
+    errors.length !== 0 ? next(errors) : next();
+  });
+}
+
+module.exports = { AppError, catchAsync, custom404, errorHandling, validate };
+
+/*function validateUnused(name) {
   function processSchema(rawSchema) {
     const keep = ["type", "maxLength"];
 
@@ -71,6 +81,4 @@ function validate(name) {
     const { errors } = v.validate(req.body, processSchema(rawSchema));
     errors.length !== 0 ? next(errors) : next();
   });
-}
-
-module.exports = { AppError, catchAsync, custom404, errorHandling, validate };
+}*/
