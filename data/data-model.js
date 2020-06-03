@@ -17,7 +17,7 @@ function addTask(task) {
     .then(([id]) => knex("tasks").where({ id }).first());
 }
 function getProjects() {
-  return knex("projects").first();
+  return knex("projects");
 }
 function getProject(id) {
   return knex("projects")
